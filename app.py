@@ -12,8 +12,9 @@ def home():  # Use 'home' instead of 'index' to avoid conflict
     return render_template("index.html")
 
 if __name__ == '__main__':
-    app.run()
-
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
 app = Flask(__name__)
 DOWNLOAD_FOLDER = os.path.join(os.getcwd(), "downloads")
 if not os.path.exists(DOWNLOAD_FOLDER):
