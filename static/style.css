@@ -1,0 +1,33 @@
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f9f9f9;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+.container {
+  max-width: 800px;
+  margin: 30px auto;
+  background: white;
+  padding: 30px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+form input[type="text"], form button {
+  margin-top: 10px;
+}
+progress {
+  width: 100%;
+  height: 20px;
+}
+video {
+  margin-top: 10px;
+  width: 100%;
+}
+footer {
+  background: #f1f1f1;
+  padding: 20px;
+  text-align: center;
+  margin-top: 40px;
+}

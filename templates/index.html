@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Fast and secure YouTube video downloader. Download videos in high quality with a modern, professional UI.">
+  <title>YouTube Downloader</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+<header>
+  <img src="/static/nxextgenearners.png" alt="Banner" />
+  <h1>YouTube Video Downloader</h1>
+</header>
+
+<div class="container">
+  <form id="download-form">
+    <input type="text" name="url" placeholder="Enter YouTube URL..." required />
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <input type="text" name="path" id="path" placeholder="Download path (optional)" style="flex: 1;" />
+      <button type="button" onclick="choosePath()" style="padding: 10px 15px; background-color: #666; font-size: 0.9rem;">
+        📁 Browse
+      </button>
+    </div>
+    <button type="submit"><i class="fa-solid fa-circle-down"></i> Download Now</button>
+  </form>
+
+  <progress id="progress-bar" value="0" max="100"></progress>
+  <p id="status">Status: Waiting...</p>
+
+  <div id="info">
+    <p><strong>Title:</strong> <span id="title"></span></p>
+    <p><strong>Size:</strong> <span id="size"></span></p>
+    <p><strong>Saved at:</strong> <span id="filepath"></span></p>
+    <video id="video-preview" controls></video>
+  </div>
+
+  <section class="testimonials">
+    <h2>What Users Say</h2>
+    <div class="testimonial">"This downloader is super fast and easy to use!" – Ayesha</div>
+    <div class="testimonial">"I love the clean interface and instant results." – Raj</div>
+  </section>
+
+  <section class="badges">
+    <h2>Trusted By</h2>
+    <div class="badge"><img src="/static/trust1.png" alt="Secure"/></div>
+    <div class="badge"><img src="/static/trust2.png" alt="Fast"/></div>
+  </section>
+
+  <section class="faq">
+    <h2>FAQs</h2>
+    <p><strong>Q:</strong> Is this tool free?<br/><strong>A:</strong> Yes, 100% free and safe.</p>
+    <p><strong>Q:</strong> Can I download videos in HD?<br/><strong>A:</strong> Absolutely, the best quality available will be selected.</p>
+  </section>
+</div>
+
+<footer>
+  <p><strong>About This Website:</strong> A professional YouTube downloader made with care using Python, Flask, and modern UI tools. Designed for creators and casual users alike.</p>
+  <p>📧 Contact: <a href="mailto:support@example.com">support@example.com</a></p>
+</footer>
+
+<script>
+  const form = document.getElementById('download-form');
+  const progressBar = document.getElementById('progress-bar');
+  const statusText = document.getElementById('status');
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const response = await fetch('/download', {
+      method: 'POST',
+      body: formData
+    });
+    const result = await response.json();
+    statusText.innerText = "Status: Downloading...";
+
+    const interval = setInterval(async () => {
+      const info = await fetch('/info');
+      const data = await info.json();
+      if (data.downloaded) {
+        progressBar.value = parseFloat(data.downloaded.replace('%',''));
+        statusText.innerText = `Progress: ${data.downloaded} — Speed: ${data.speed}`;
+      }
+      if (data.downloaded === '100%') {
+        clearInterval(interval);
+        document.getElementById('title').innerText = data.title;
+        document.getElementById('size').innerText = data.size + ' MB';
+        document.getElementById('filepath').innerText = data.filepath;
+        document.getElementById('video-preview').src = '/' + data.filepath;
+      }
+    }, 1000);
+  };
+
+  function choosePath() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.webkitdirectory = true;
+    input.directory = true;
+    input.style.display = 'none';
+
+    input.addEventListener('change', function (e) {
+      const pathField = document.getElementById('path');
+      const files = e.target.files;
+
+      if (files.length > 0) {
+        const fullPath = files[0].webkitRelativePath;
+        const firstFolder = fullPath.split('/')[0];
+        pathField.value = firstFolder;
+      } else {
+        alert("No folder selected.");
+      }
+    });
+
+    document.body.appendChild(input);
+    input.click();
+    document.body.removeChild(input);
+  }
+</script>
+
+</body>
+</html>
